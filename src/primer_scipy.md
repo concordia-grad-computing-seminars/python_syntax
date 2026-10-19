@@ -43,8 +43,70 @@ def fnc(x):
     return np.exp(x)-3
 
 x0 = np.log(3)
+print(x0)
 print(fnc(x0))
 ```
+(Note that we are using the function np.log because the "default" log function in numpy is the base $e$ or natural logarithm. The base-10 logarithm function is np.log10(). Don't get confused!)
+
+That value of approximately $x_0 = 1.098612$ is the **exact** value of the zero, or the **analytical** solution.
+
+What if I don't know what the function is? Or if I just forgot how to manipulate logarithms and exponentials? We can use many algorithms you should have learned in a numerical methods course, such as
+* bisection method
+* secant method
+* Newton method
+* and many more!
+
+In scipy, those are contained within the scipy.optimize submodule. The main function we can use is *root_scalar* (for a function that returns a scalar).
+
+```python
+import numpy as np
+import scipy.optimize as opt
+
+def fnc(x):
+    return np.exp(x)-3
+
+x0 = np.log(3)
+print(x0)
+print(fnc(x0))
+
+##Using the bisection method in the interval 0 to 3
+sol = opt.root_scalar(fnc, bracket=[0, 3], method='bisect')
+sol.root, sol.iterations, sol.function_calls
+```
+
+On my system, the correct answer was found after 41 iterations and 43 function calls. 
+
+```
+##Using the Newton method with initial guess x0 = 0
+##The newton method requires a derivative!!
+def fnc_p(x):
+    return np.exp(x) ##the derivative of e^x is e^x!!
+
+sol = opt.root_scalar(fnc, x0=0, method='newton', fprime=fnc_p)
+sol.root, sol.iterations, sol.function_calls
+```
+This time, the zero is found with 7 iterations and 14 function_calls! A lot less computational work!
+
+```
+##Using the BrentQ method with bracket [0,3]
+##The BrentQ method does not require a derivative!!
+
+sol = opt.root_scalar(fnc, bracket=[0,3], method='brentq')
+sol.root, sol.iterations, sol.function_calls
+```
+This time it's 10 iterations, but only 11 function calls. More iterations, but less work, so this is likely more efficient than Newton.
+
+We can also let the function decide which method to use according to its own internal logic.
+
+```
+##Using default method settings
+
+sol = opt.root_scalar(fnc, bracket=[0,3], fprime=fnc_p)
+sol.root, sol.iterations, sol.function_calls
+```
+From the results, it looks like root_scalar() uses brentq as a default.
+
+You can get the full details here https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy.optimize.root
 
 ## Function integration
 
