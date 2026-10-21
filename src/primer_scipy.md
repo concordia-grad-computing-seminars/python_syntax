@@ -133,7 +133,7 @@ Then, we solve by using
 ```
 sol = int.solve_ivp(deriv, [0, 10], [3])
 ```
-Now, we modify for Baumgartner.
+Now, we modify the differential equation for Baumgartner. [Note that we are hard-coding the values of the constants. We should pass those as parameters.]
 
 ```
 import numpy as np
@@ -148,4 +148,9 @@ def deriv(t,y):
     derivs[0] = dxdt
     derivs[1] = dVdt
     return derivs
+```
+To integrate the system, we call solve_ivp with the correct time span and 2 initial conditions: $x(0) = 30 000$ and $V(0) = 0$.
+
+```
+sol = int.solve_ivp(deriv, [0, 200], [30000,0])
 ```
