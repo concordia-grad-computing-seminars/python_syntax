@@ -116,13 +116,36 @@ $$
 \frac{dx}{dt} = V
 \frac{dV}{dt} = \frac{1}{2}\rho_\mathrm{air} V^2 A C_D - m g
 $$
-We will use, in the scipy.integrate submodule, the ____________________ function.
-First, we need to define a function for the derivatives!
+We will use, in the scipy.integrate submodule, the solve_ivp function.
+First, we need to define a function for the derivatives! Let's use the example from the scipy documentation for solve_ivp and modify.
+The exmample is:
 
-'''
+```
 import numpy as np
 import scipy.integrate as int
 
-def deriv():
-    pass
-'''
+def deriv(t,y):
+    return -0.5 * y
+```
+
+Then, we solve by using
+
+```
+sol = int.solve_ivp(deriv, [0, 10], [3])
+```
+Now, we modify for Baumgartner.
+
+```
+import numpy as np
+import scipy.integrate as int
+
+def deriv(t,y):
+    x = y[0]
+    V = y[1]
+    dxdt = V
+    dVdt = 0.5*1.2*V**2*0.09*0.3/80 - 9.81
+    derivs = 0 *y
+    derivs[0] = dxdt
+    derivs[1] = dVdt
+    return derivs
+```
