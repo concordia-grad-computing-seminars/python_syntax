@@ -108,8 +108,12 @@ From the results, it looks like root_scalar() uses brentq as a default.
 
 You can get the full details here https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.root.html#scipy.optimize.root
 
-## Function integration
+## Function Integration
 
-### Quadrature
-
-### Integrating a system of equations
+### Integrating a System of Equations
+Baumgartner jumped from roughly 30 km altitude to break the sound barrier in free fall. The system of equations would look like
+$$
+\frac{dx}{dt} = V
+\frac{dV}{dt} = \frac{1}{2}\rho_\mathrm{air} V^2 A C_D - m g
+##
+We will use, in the scipy.integrate submodule, the ____________________ function.
