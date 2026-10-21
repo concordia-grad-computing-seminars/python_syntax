@@ -115,5 +115,14 @@ Baumgartner jumped from roughly 30 km altitude to break the sound barrier in fre
 $$
 \frac{dx}{dt} = V
 \frac{dV}{dt} = \frac{1}{2}\rho_\mathrm{air} V^2 A C_D - m g
-##
+$$
 We will use, in the scipy.integrate submodule, the ____________________ function.
+First, we need to define a function for the derivatives!
+
+'''
+import numpy as np
+import scipy.integrate as int
+
+def deriv():
+    pass
+'''
