@@ -189,7 +189,7 @@ def g_h(h):
     ## Outputs: Gravity, g_x [m/s^2]
     g_0 = 9.80665
     R_E = 6371.00877
-    return g_0 * (R_E/(R_E+h))^2
+    return g_0 * (R_E/(R_E+h))**2
 ```
 We then modify our derivative function to call our gravity function at every call.
 
