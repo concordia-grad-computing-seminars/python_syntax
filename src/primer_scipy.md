@@ -142,11 +142,16 @@ import scipy.integrate as int
 def deriv(t,y):
     x = y[0]
     V = y[1]
+    rho_air = 1.2   #air density set to 1.2 kg/m^3
+    A_front = 0.09  #frontal area set to 0.09 m^2
+    C_d     = 0.3   #Drag coefficient set to C_d = 0.3
+    g       = 0.81  #Gravitational acceleration set to 9.81 m/s^2
+    m_obj   = 80    #Object mass set to m_obj = 80 kg
     dxdt = V
-    dVdt = 0.5*1.2*V**2*0.09*0.3/80 - 9.81
-    derivs = 0 *y
-    derivs[0] = dxdt
-    derivs[1] = dVdt
+    dVdt = 0.5*rho_air*V**2*A_front*C_d/m_obj - g
+    derivs = 0 *y     #ensure the output variable has the same size and shape as the input
+    derivs[0] = dxdt  #place the values of the derivaties in the output object
+    derivs[1] = dVdt  #with correspondance, i.e. y[0] -> x, derivs[0] -> dx/dt, etc
     return derivs
 ```
 To integrate the system, we call solve_ivp with the correct time span and 2 initial conditions: $x(0) = 30 000$ and $V(0) = 0$.
