@@ -145,7 +145,7 @@ def deriv(t,y):
     rho_air = 1.2   #air density set to 1.2 kg/m^3
     A_front = 0.09  #frontal area set to 0.09 m^2
     C_d     = 0.3   #Drag coefficient set to C_d = 0.3
-    g       = 0.81  #Gravitational acceleration set to 9.81 m/s^2
+    g       = 9.81  #Gravitational acceleration set to 9.81 m/s^2
     m_obj   = 80    #Object mass set to m_obj = 80 kg
     dxdt = V
     dVdt = 0.5*rho_air*V**2*A_front*C_d/m_obj - g
@@ -158,4 +158,54 @@ To integrate the system, we call solve_ivp with the correct time span and 2 init
 
 ```
 sol = int.solve_ivp(deriv, [0, 200], [30000,0])
+```
+We can now use matplotlib to plot look at the resulting curve. (There's a document explaining matplotlib, but we'll show the bare example here, using pyplot.)
+
+We can look at vertical position, in km (hence the factor of 1000).
+```
+import matplotlib.pyplot as plt #import pyplot from matplotlib
+plt.plot(sol.t, sol.y[0]/1000)  #plot position (/1000 to be in km) vs time
+plt.show()                      #plt.show() creates the actual plot window
+```
+and we can look at the velocity afterwards:
+```
+plt.plot(sol.t, sol.y[1])  #plot position (/1000 to be in km) vs time
+plt.show()                      #plt.show() creates the actual plot window
+```
+
+## Taking the example further to be more realistic
+We make several assumptions in our example: $\rho_\mathrm{air} = \mathrm{constant}$, $C_\mathrm{drag} = \mathrm{constant}$, $g = \mathrm{constant}$. All of these are wrong. How would we improve on these approximations? We can define functions for the different variables. For example, gravity varies depending on distance from the Earth's surface. We can remind ourselves of the square formula using Wikipedia https://en.wikipedia.org/wiki/Gravity_of_Earth
+
+$$
+g(x) = g_0 \left( \frac{R_E}{R_E + x} \right)^2,
+$$
+
+where $R_E = 6371.00877$ km is the Earth's radius, $x$ is the altitude (careful about units here) and $g_0=9.80665$ m/s^2 is the gravitational acceleration at sea level.
+
+A gravitational acceleration function can be written
+```
+def g_h(h):
+    ## Inputs: Altitude, h [km]
+    ## Outputs: Gravity, g_x [m/s^2]
+    g_0 = 9.80665
+    R_E = 6371.00877
+    return g_0 * (R_E/(R_E+h))^2
+```
+We then modify our derivative function to call our gravity function at every call.
+
+```
+def deriv(t,y):
+    x = y[0]
+    V = y[1]
+    rho_air = 1.2   #air density set to 1.2 kg/m^3
+    A_front = 0.09  #frontal area set to 0.09 m^2
+    C_d     = 0.3   #Drag coefficient set to C_d = 0.3
+    g       = g_h(x/1000) #Gravitational acceleration calculated from model (altitude is in km), g in m/s^2
+    m_obj   = 80    #Object mass set to m_obj = 80 kg
+    dxdt = V
+    dVdt = 0.5*rho_air*V**2*A_front*C_d/m_obj - g
+    derivs = 0 *y     #ensure the output variable has the same size and shape as the input
+    derivs[0] = dxdt  #place the values of the derivaties in the output object
+    derivs[1] = dVdt  #with correspondance, i.e. y[0] -> x, derivs[0] -> dx/dt, etc
+    return derivs
 ```
