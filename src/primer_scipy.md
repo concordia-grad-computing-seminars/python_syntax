@@ -112,11 +112,15 @@ You can get the full details here https://docs.scipy.org/doc/scipy/reference/gen
 
 ### Integrating a System of Equations
 Baumgartner jumped from roughly 30 km altitude to break the sound barrier in free fall. The system of equations would look like
+
 $$
 \frac{dx}{dt} = V
-\frac{dV}{dt} = \frac{1}{2}\rho_\mathrm{air} V^2 A C_D - m g
 $$
-We will use, in the scipy.integrate submodule, the solve_ivp function.
+$$
+\frac{dV}{dt} = \frac{1}{2}\frac{\rho_\mathrm{air} V^2 A_\mathrm{front} C_D}{m} - g
+$$
+
+where $x$ is the altitude in m, $V$ is the velocity in m/s, $t$ is time in seconds, $rho_\mathrm{air}$ is the air density in $\mathrm{kg}/\mathrm{m}^3$, $A_\mathrm{front}$ is the frontal area in $\mathrm{m}^2$, $C_D$ is the drag coefficient (unitless), $m$ is the object (here Baumgartner's) mass, and $g$ is to local gravitational acceleration. We will use, in the scipy.integrate submodule, the solve_ivp function.
 First, we need to define a function for the derivatives! Let's use the example from the scipy documentation for solve_ivp and modify. https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html
 The example is:
 
@@ -161,19 +165,19 @@ sol = int.solve_ivp(deriv, [0, 200], [30000,0])
 ```
 We can now use matplotlib to plot look at the resulting curve. (There's a document explaining matplotlib, but we'll show the bare example here, using pyplot.)
 
-We can look at vertical position, in km (hence the factor of 1000).
+We can look at vertical position, in km (hence the factor of 1000)
 ```
 import matplotlib.pyplot as plt #import pyplot from matplotlib
 plt.plot(sol.t, sol.y[0]/1000)  #plot position (/1000 to be in km) vs time
 plt.show()                      #plt.show() creates the actual plot window
 ```
-and we can look at the velocity afterwards:
+and we can look at the velocity afterwards
 ```
 plt.plot(sol.t, sol.y[1])  #plot position (/1000 to be in km) vs time
 plt.show()                      #plt.show() creates the actual plot window
 ```
 
-## Taking the example further to be more realistic
+### Taking the example further to be more realistic
 We make several assumptions in our example: $\rho_\mathrm{air} = \mathrm{constant}$, $C_\mathrm{drag} = \mathrm{constant}$, $g = \mathrm{constant}$. All of these are wrong. How would we improve on these approximations? We can define functions for the different variables. For example, gravity varies depending on distance from the Earth's surface. We can remind ourselves of the square formula using Wikipedia https://en.wikipedia.org/wiki/Gravity_of_Earth
 
 $$
@@ -209,3 +213,8 @@ def deriv(t,y):
     derivs[1] = dVdt  #with correspondance, i.e. y[0] -> x, derivs[0] -> dx/dt, etc
     return derivs
 ```
+Air density can be modelled using the standard atmosphere. Extending the model is starting to get complicated, but we can find packages that have implemented models. For example, the 1976 standard US atmosphere model is implemented here https://scikit-aero.readthedocs.io/en/latest/skaero/atmosphere/.
+
+A classic text, "Fluid Dynamic Drag" by Hörner, can be consulted to find appropriate functions at a variety of speeds. https://ia800606.us.archive.org/17/items/FluidDynamicDragHoerner1965/Fluid-dynamic_drag__Hoerner__1965_text.pdf.
+
+Each model would then be called within our derivative function, deriv(), that will itself be called by solve_ivp().
