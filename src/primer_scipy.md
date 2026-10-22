@@ -117,8 +117,8 @@ $$
 \frac{dV}{dt} = \frac{1}{2}\rho_\mathrm{air} V^2 A C_D - m g
 $$
 We will use, in the scipy.integrate submodule, the solve_ivp function.
-First, we need to define a function for the derivatives! Let's use the example from the scipy documentation for solve_ivp and modify.
-The exmample is:
+First, we need to define a function for the derivatives! Let's use the example from the scipy documentation for solve_ivp and modify. https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html
+The example is:
 
 ```
 import numpy as np
